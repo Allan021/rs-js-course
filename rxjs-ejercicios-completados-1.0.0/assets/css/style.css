@@ -9,7 +9,7 @@ body {
 
 body {
   text-align: center !important;
-  background-color: #18202f;
+  background-color: #18202f !important;
 }
 
 h1 {
@@ -87,4 +87,8 @@ ol {
 .mostarscroll {
   opacity: 1;
   pointer-events: auto;
+}
+
+hr {
+  color: white !important;
 }

@@ -1,21 +1,24 @@
-import { asyncScheduler, fromEvent } from "rxjs";
-import { distinctUntilChanged, pluck, throttleTime } from "rxjs/operators";
+import { ajax } from "rxjs/ajax";
+import { switchMap, map } from "rxjs/operators";
+import { zip, of } from "rxjs";
 
-const click$ = fromEvent<MouseEvent>(document, "click");
+(() => {
+  // No tocar ========================================================
+  const SW_API = "https://swapi.dev/api";
+  const getRequest = (url: string) => ajax.getJSON<any>(url);
+  // ==================================================================
 
-click$.pipe(throttleTime(2000)).subscribe(console.log);
-const $input = document.createElement("input");
+  // Realizar el llamado al URL para obtener a Luke Skywalker
+  getRequest(`${SW_API}/people/2`)
+    .pipe(
+      // Realizar los operadores respectivos aquí
 
-document.querySelector("body").append($input);
+      // NO TOCAR el subscribe ni modificarlo ==
+      switchMap((resp) => zip(of(resp), getRequest(`${resp.species[0]}`))),
+      map(([personaje, human]) => ({ personaje, human }))
+    )
+    .subscribe(console.log);
 
-fromEvent<KeyboardEvent>($input, "keyup")
-  .pipe(
-    pluck("target", "value"),
-    throttleTime(1500, asyncScheduler, {
-      leading: true,
-      trailing: false,
-    }),
-    distinctUntilChanged()
-  )
-
-  .subscribe(console.log);
+  // ==
+  // =======================================
+})();
